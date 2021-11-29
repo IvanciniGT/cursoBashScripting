@@ -59,3 +59,51 @@ echo "El doble del numero 5 es $variable"
 #$( comando )  Ejecuta un comando en una subshell y captura la salida estandar del comando
 
 ficheros=$( ls / )
+
+
+function lectorArgumentos(){
+    echo $1.   # a
+    shift   # Descartar el primer argumento de entre los argumentos que recibe una función o programa
+            # Se ha descartado el $1... Por lo tanto:
+                # $2 -> $1
+    echo $1
+    echo $2
+    echo $3
+    echo $4
+    echo $5
+    echo Tienes: $# argumentos
+}
+lectorArgumentos a b c d e
+
+# 1 a     -> shift  ->      b         
+# 2 b                       c
+# 3 c                       d
+# 4 d                       e
+# 2 e
+
+
+function movermePorArgumentos(){
+    TOTAL_ARGUMENTOS=$#
+    for indice_argumento in $(seq 1 $TOTAL_ARGUMENTOS)
+    do
+        echo ---${!indice_argumento} # Devolver el valor de una variable cuyo nombre
+                                    # esta contenido en otra variable
+    done
+}
+movermePorArgumentos a b c d e
+
+azul=4
+rojo=16
+
+color="azul"
+
+echo ${!color}  # AZUL ---> 4 ????
+
+function movermePorArgumentos2(){
+    while (( $# > 0 )) # Mientras haya argumentos
+    do
+        echo +++$1      # Imprimo el primero
+        shift           # Y lo descarto
+    done
+}
+movermePorArgumentos2 a b c d e

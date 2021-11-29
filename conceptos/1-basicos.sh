@@ -38,7 +38,7 @@ set mi_variable=23+5
 echo $mi_variable
 
 # Indica a la bash que lo que hay detrás es una expresión matemática
-let mi_variable=23+5  #Podemos poner + - * /
+let mi_variable=23+5  #Podemos poner + - *
 echo $mi_variable
 
 ####################################################################################
