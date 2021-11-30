@@ -8,6 +8,7 @@
 #   -q, --question-mark         texto   Delimitador de la pregunta. Por defecto ":"
 #   -l, --allowed-values-list   texto   Valores posibles separados por espacios
 #   -e, --error-message         texto   Mensaje si el valor introducido no es adecuado
+#   -v, --validation-pattern    texto   Patrón que debe cumplir el valor introducido 
 #
 # Ejemplos:
 #    Dame la IP del servidor [localhost]: ENTER
@@ -35,7 +36,9 @@ function super_read(){
     local varname=""
     local allowedvalueslist=""
     local errormessage="" #$MENSAJE_ERROR_POR_DEFECTO
+    local validationpattern=""
     
+    # Captura de parametros
     while (( $# > 0 ))
     do
         case "$1" in 
@@ -76,6 +79,14 @@ function super_read(){
                     allowedvalueslist=${1#*=}
                 else 
                     allowedvalueslist=$2
+                    shift
+                fi
+            ;;
+            -v|--validation-pattern|-v=*|--validation-pattern=*)
+                if [[ "$1" == *=* ]]; then
+                    validationpattern=${1#*=}
+                else 
+                    validationpattern=$2
                     shift
                 fi
             ;;
@@ -134,7 +145,7 @@ function super_read(){
     
     # Validar si el valor está entre los permitidos
     if [[ -n "$allowedvalueslist" ]]; then
-        respuesta_aceptable=1 # Respuesta aceptable
+        respuesta_aceptable=1 # Respuesta no aceptable
         for valor_permitido in $allowedvalueslist
         do
             if [[ "$valor_permitido" == "$respuesta_del_usuario" ]]; then
@@ -143,7 +154,16 @@ function super_read(){
             fi
         done
     fi
-    # Más validaciones
+    # Validar si cumple con un patron que se haya suministrado
+    if [[ -n "$validationpattern" ]]; then
+        if [[ "$respuesta_del_usuario" =~ $validationpattern ]]; then
+            respuesta_aceptable=0 # Respuesta aceptable
+        else
+            respuesta_aceptable=1 # Respuesta no aceptable
+        fi
+        #[[ "$respuesta_del_usuario" =~ $validationpattern ]] && respuesta_aceptable=0 || respuesta_aceptable=1 # Respuesta no aceptable
+
+    fi
     
     if (( respuesta_aceptable == 0 )); then
     # llegados el punto que la respuesta_del_usuario es válida, qué hago?
@@ -166,4 +186,10 @@ super_read -p="Servicio a reiniciar" SERVICIO
 echo $SERVICIO
 super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" -e="Debe contestar 'si' o 'no'." REINICIO
 echo $REINICIO
-#super_read --prompt "Deseas reiniciar el servidor" -d si -REINICIO
+
+super_read \
+    --prompt "Segundos antes de reiniciar el servidor" \
+    -d 0 \
+    -v "^(([0-9])|([1-9][0-9]+))$" \
+    -e "Debe introducir un numero entero mayor o igual a cero" \
+    DELAY
