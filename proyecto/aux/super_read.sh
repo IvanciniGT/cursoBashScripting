@@ -200,17 +200,17 @@ function super_read(){
 }
 
 # Programa
-super_read -p="Dame la IP del servidor" --default localhost -e "Nombre de servidor incorrecto" IP 
-echo $IP
-super_read -p="Servicio a reiniciar" SERVICIO 
-echo $SERVICIO
-super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" -e="Debe contestar 'si' o 'no'." REINICIO
-echo $REINICIO
+#super_read -p="Dame la IP del servidor" --default localhost -e "Nombre de servidor incorrecto" IP 
+#echo $IP
+#super_read -p="Servicio a reiniciar" SERVICIO 
+#echo $SERVICIO
+#super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" -e="Debe contestar 'si' o 'no'." REINICIO
+#echo $REINICIO
 
-super_read \
-    --prompt "Segundos antes de reiniciar el servidor" \
-    -d 0 \
-    -v "^(([0-9])|([1-9][0-9]+))$" \
-    -e "Debe introducir un numero entero mayor o igual a cero" \
-    DELAY
+#super_read \
+#    --prompt "Segundos antes de reiniciar el servidor" \
+#    -d 0 \
+#    -v "^(([0-9])|([1-9][0-9]+))$" \
+#    -e "Debe introducir un numero entero mayor o igual a cero" \
+#    DELAY
 
