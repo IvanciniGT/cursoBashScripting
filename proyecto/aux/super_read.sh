@@ -7,6 +7,7 @@
 #   -d, --default               texto   Valor por defecto
 #   -q, --question-mark         texto   Delimitador de la pregunta. Por defecto ":"
 #   -l, --allowed-values-list   texto   Valores posibles separados por espacios
+#   -e, --error-message         texto   Mensaje si el valor introducido no es adecuado
 #
 # Ejemplos:
 #    Dame la IP del servidor [localhost]: ENTER
@@ -18,6 +19,9 @@
 #    Deseas reiniciar el servidor (si|no) [si]? tal vez
 #       $ ./super_read.sh --prompt "Deseas reiniciar el servidor" -d si -q "?" REINICIO
 
+MENSAJE_ERROR_POR_DEFECTO="Respuesta incorrecta"
+QUESTION_MARK_POR_DEFECTO=":"
+
 function uso_incorrecto_de_la_funcion_superread(){
     echo "Uso incorreto de la función super_read"
     exit 1
@@ -27,13 +31,22 @@ function super_read(){
     # Definición de variables que necesita mi función
     local prompt=""                 # De serie dentro de una función definimos las variables como locales
     local default=""
-    local questionmark=":"
+    local questionmark=$QUESTION_MARK_POR_DEFECTO
     local varname=""
     local allowedvalueslist=""
+    local errormessage="" #$MENSAJE_ERROR_POR_DEFECTO
     
     while (( $# > 0 ))
     do
         case "$1" in 
+            -e|--error-message|-e=*|--error-message=*)
+                if [[ "$1" == *=* ]]; then
+                    errormessage=${1#*=}
+                else 
+                    errormessage=$2
+                    shift
+                fi
+            ;;
             -p|--prompt|-p=*|--prompt=*)
                 if [[ "$1" == *=* ]]; then
                     prompt=${1#*=}
@@ -112,24 +125,45 @@ function super_read(){
     
     # Validar esa respuesta
     # Revisar que si no se introduce nada y hay valor por defecto, se lo enchufo
+    #respuesta_del_usuario=${respuesta_del_usuario:-$default}
     if [[ -z "$respuesta_del_usuario" && -n "$default" ]]; then
         respuesta_del_usuario="$default"
     fi
     
+    respuesta_aceptable=0 # Respuesta aceptable
+    
+    # Validar si el valor está entre los permitidos
+    if [[ -n "$allowedvalueslist" ]]; then
+        respuesta_aceptable=1 # Respuesta aceptable
+        for valor_permitido in $allowedvalueslist
+        do
+            if [[ "$valor_permitido" == "$respuesta_del_usuario" ]]; then
+                respuesta_aceptable=0 # Respuesta aceptable
+                break # Rompe el bucle (for) para que ya no se siga procesando
+            fi
+        done
+    fi
+    # Más validaciones
+    
+    if (( respuesta_aceptable == 0 )); then
     # llegados el punto que la respuesta_del_usuario es válida, qué hago?
-    # Relleno la variable $varname con el valor capturado
-    eval $varname=\"$respuesta_del_usuario\" # -> eval IP="localhost"
-    # EVAL: Primero resuelve variables para contruir una linea de codigo que posteriormente es ejecutada
-    # EVAL es una función muy peligrosa. Sujeta a problemas de inyeccion de codigo
-    #   IP=$(rm -rf /)
+        # Relleno la variable $varname con el valor capturado
+        eval $varname=\"$respuesta_del_usuario\" # -> eval IP="localhost"
+        # EVAL: Primero resuelve variables para contruir una linea de codigo que posteriormente es ejecutada
+        # EVAL es una función muy peligrosa. Sujeta a problemas de inyeccion de codigo
+        #   IP=$(rm -rf /)
+    else
+        echo "${errormessage:-$MENSAJE_ERROR_POR_DEFECTO}"
+        # TODO
+    fi
     
 }
 
 # Programa
-super_read -p="Dame la IP del servidor" --default localhost IP 
+super_read -p="Dame la IP del servidor" --default localhost -e "Nombre de servidor incorrecto" IP 
 echo $IP
 super_read -p="Servicio a reiniciar" SERVICIO 
 echo $SERVICIO
-super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" REINICIO
+super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" -e="Debe contestar 'si' o 'no'." REINICIO
 echo $REINICIO
 #super_read --prompt "Deseas reiniciar el servidor" -d si -REINICIO
