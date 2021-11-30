@@ -3,9 +3,10 @@
 # Función: super_read [args] var_name
 #
 # Argumentos:
-#   -p, --prompt        texto   Mensaje que se muestra al usuario
-#   -d, --default       texto   Valor por defecto
-#   -q, --question-mark texto   Delimitador de la pregunta. Por defecto ":"
+#   -p, --prompt                texto   Mensaje que se muestra al usuario
+#   -d, --default               texto   Valor por defecto
+#   -q, --question-mark         texto   Delimitador de la pregunta. Por defecto ":"
+#   -l, --allowed-values-list   texto   Valores posibles separados por espacios
 #
 # Ejemplos:
 #    Dame la IP del servidor [localhost]: ENTER
@@ -28,6 +29,7 @@ function super_read(){
     local default=""
     local questionmark=":"
     local varname=""
+    local allowedvalueslist=""
     
     while (( $# > 0 ))
     do
@@ -56,6 +58,14 @@ function super_read(){
                     shift
                 fi
             ;;
+            -l|--allowed-values-list|-l=*|--allowed-values-list=*)
+                if [[ "$1" == *=* ]]; then
+                    allowedvalueslist=${1#*=}
+                else 
+                    allowedvalueslist=$2
+                    shift
+                fi
+            ;;
             -*)
                 uso_incorrecto_de_la_funcion_superread
             ;;
@@ -78,7 +88,21 @@ function super_read(){
     
     # Mostrar la pregunta
     echo -n $prompt
-    if [[ -n "$default" ]];then
+    
+    # Mostrar los posibles valores al usuario
+    if [[ -n "$allowedvalueslist" ]]; then
+        echo -n " ("
+        valores_a_mostrar=""
+        for valor_permitido in $allowedvalueslist
+        do
+            valores_a_mostrar="$valores_a_mostrar|$valor_permitido"
+        done
+        echo -n ${valores_a_mostrar#|}
+        echo -n ")"
+    fi
+    
+    # Mostrar el valor por defecto
+    if [[ -n "$default" ]]; then
         echo -n " [$default]"
     fi
         echo -n "$questionmark "
@@ -106,6 +130,6 @@ super_read -p="Dame la IP del servidor" --default localhost IP
 echo $IP
 super_read -p="Servicio a reiniciar" SERVICIO 
 echo $SERVICIO
-super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" REINICIO
+super_read --prompt "Deseas reiniciar el servidor" -d si -q "?" -l "si no" REINICIO
 echo $REINICIO
 #super_read --prompt "Deseas reiniciar el servidor" -d si -REINICIO
