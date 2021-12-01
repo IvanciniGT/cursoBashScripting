@@ -34,13 +34,6 @@ function pararMonitorizacion(){
 function estadoServicios(){
     echo
 }
-function altaServicio(){
-    echo
-}
-function bajaServicio(){
-    echo
-}
-
 
 
 super_menu "menus/principal"
