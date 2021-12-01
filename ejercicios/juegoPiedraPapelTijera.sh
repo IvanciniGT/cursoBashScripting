@@ -44,11 +44,16 @@ do
     # Calculamos el ganador
     ganador=${reglas[$opcion_jugador,$opcion_ordenador]}
     let resultados[$ganador]=${resultados[$ganador]}+1
+    # Mostrar la opción del ordenador
+    echo Yo he elegido: $opcion_ordenador
+
     # Mostrar el ganador de la mano
     echo ${mensaje_ganador[ganador]}
 done
 
 echo HEMOS ACABADO
-ganador_final=$(( ${resultados[1]} == 2 ))   #  Si gana el jugador:   True   1
-                                             #  Si gana el ordenador: False  0
-echo $ganador_final                                         
+ganador_final=$(( ${resultados[1]} != 2 ))   #  Si gana el jugador:   True   0
+                                             #  Si gana el ordenador: False  1
+let ganador_final=$ganador_final+1
+# Mostrar el ganador final
+echo ${mensaje_ganador[$ganador_final]}
