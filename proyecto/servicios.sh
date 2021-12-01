@@ -9,6 +9,49 @@
 #
 DIRECTORIO_SERVICIOS=./servicios/
 ARCHIVO_SERVICIOS=servicios.txt
+NOMBRE_ARRAY_SERVICIOS=DATOS_SERVICIO_
+# Para cada servicio vamos a crear un arrary asociativo, con 3 campos: id, descripcion, url
+
+declare -a listado_servicios=() # aqui vamos a guardar los ids
+
+function cargarServicios(){
+    local id=""
+    local descripcion=""
+    local url=""
+    
+    while read linea 
+    do
+        if [[ -z "$linea" || "$linea" =~ "^\s*#" ]]; then # Si tienes espacios o tabuladores antes del #
+            continue # salta a la siguiente iteracion
+        elif [[ "$linea" == \[*\] ]]; then
+            crearArrayServicio "$id" "$descripcion" "$url"
+            id=${linea//\[/}
+            id=${id//\]/}
+            listado_servicios+=( "$id" )
+        elif [[ "$linea" == *=* ]]; then
+            campo=${linea%=*}
+            valor=${linea#*=}
+            #[[ "$campo" == "url" ]] && url="$valor"
+            #[[ "$campo" == "descripcion" ]] && descripcion="$valor"
+            eval $campo=\"$valor\"  # descripcion="esto es.." 
+            
+        fi
+        
+    done < ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
+    crearArrayServicio "$id" "$descripcion" "$url"
+
+}
+
+function crearArrayServicio(){
+    local id=$1
+    if [[ -z "$id" ]]; then
+        return
+    fi
+    local descripcion=$2
+    local url=$3
+    eval "declare -A ${NOMBRE_ARRAY_SERVICIOS}$id=([id]=\"$id\" [descripcion]=\"$descripcion\" [url]=\"$url\")"
+                    # DATOS_SERVICIO_tomcat["url"]
+}
 
 function altaServicio(){
     # Solicitar los datos del servicio
@@ -72,6 +115,6 @@ if [[ ! -f "${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}" ]]; then
     touch "${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}"
 else
     # Leerlo
-    echo
+    cargarServicios
 fi
 altaServicio

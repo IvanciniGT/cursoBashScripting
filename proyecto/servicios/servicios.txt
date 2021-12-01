@@ -1,0 +1,8 @@
+# Comentarios
+[tomcat]
+url=http://10.10.10.10:8080
+descripcion=Serv. apps del entorno de desarrollo
+
+[tomcat2]
+url=http://10.10.10.10:8080
+descripcion=Serv. apps del entorno de desarrollo
