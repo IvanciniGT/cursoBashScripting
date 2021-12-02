@@ -43,12 +43,29 @@ function identificarAlertas(){
 # docker run --name minginx --rm -p 8080:80 -d nginx
 # docker stop minginx
 read -n 1 -p "Pulse una tecla tecla comenzar y en cualquier momento otra para finalizar"
-iniciarComprobaciones "http://localhost:8080/" 2 | volcarAFichero localhost.log | identificarAlertas 5 &
-comprobador_pid=$!
+iniciarComprobaciones "http://localhost:8080/" 1 | volcarAFichero localhost.log  | identificarAlertas 5 > url1.status &
+comprobador_pid_1=$!
+iniciarComprobaciones "http://localhost:8081/" 1 | volcarAFichero localhost2.log | identificarAlertas 5 > url2.status &
+comprobador_pid_2=$!
+
+
+while true
+do
+    clear
+    echo "http://localhost:8080    $(cat url1.status)"
+    echo "http://localhost:8081    $(cat url2.status)"
+    sleep 4
+done
+
+comprobador_pid_3=$!
 
 read -n 1
 
-kill -15 $comprobador_pid
-
-
-
+kill -15 $comprobador_pid_1
+kill -15 $comprobador_pid_2
+kill -15 $comprobador_pid_3
+----------------------------------
+TASA REFRESCO SEA DE 4 segundos 
+URL1: OK| WARNING | ALERTA
+URL2: OK| WARNING | ALERTA
+------------------------------------
