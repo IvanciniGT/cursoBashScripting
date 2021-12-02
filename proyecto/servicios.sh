@@ -12,9 +12,10 @@ ARCHIVO_SERVICIOS=servicios.txt
 NOMBRE_ARRAY_SERVICIOS=DATOS_SERVICIO_
 # Para cada servicio vamos a crear un arrary asociativo, con 3 campos: id, descripcion, url
 
-declare -a listado_servicios=() # aqui vamos a guardar los ids
+declare -a listado_servicios # aqui vamos a guardar los ids
 
 function cargarServicios(){
+    listado_servicios=()
     local id=""
     local descripcion=""
     local url=""
@@ -49,8 +50,10 @@ function crearArrayServicio(){
     fi
     local descripcion=$2
     local url=$3
-    eval "declare -A ${NOMBRE_ARRAY_SERVICIOS}$id=([id]=\"$id\" [descripcion]=\"$descripcion\" [url]=\"$url\")"
+    eval "declare -g -A ${NOMBRE_ARRAY_SERVICIOS}$id=([id]=\"$id\" [descripcion]=\"$descripcion\" [url]=\"$url\")"
                     # DATOS_SERVICIO_tomcat["url"]
+                    # El parametro .g permite que la variable se cree globalmente
+                    # Y por tanto pueda ser utilizada fuera de esta función
 }
 
 function altaServicio(){
@@ -88,6 +91,7 @@ function altaServicio(){
     fi
     # Guardar el servicio....en el archivo
     guardarServicio "$ID_SERVICIO" "$DESCRIPCION_SERVICIO" "$URL_SERVICIO"
+    cargarServicios
 }
 function guardarServicio(){
     local id=$1
@@ -97,12 +101,23 @@ function guardarServicio(){
     echo "[$id]" >> ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
     echo "descripcion=$descripcion" >> ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
     echo "url=$url" >> ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
+    
+    
 }
 function bajaServicio(){
     echo
 }
 function listarServicios(){
-    echo
+    clear
+    titulo "Listado de servicios"
+    for id_servicio in ${listado_servicios[@]}
+    do
+        local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
+        local _descripcion=$NOMBRE_ARRAY_SERVICIOS$id_servicio[descripcion]
+        echo "${id_servicio}   ${!_url}  ${!_descripcion}"
+    done
+    azul $(linea)
+    pausa
 }
 
 # Programa
@@ -117,4 +132,5 @@ else
     # Leerlo
     cargarServicios
 fi
-altaServicio
+#ltaServicio
+listarServicios

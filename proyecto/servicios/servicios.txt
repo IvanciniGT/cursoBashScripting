@@ -4,5 +4,13 @@ url=http://10.10.10.10:8080
 descripcion=Serv. apps del entorno de desarrollo
 
 [tomcat2]
-url=http://10.10.10.10:8080
-descripcion=Serv. apps del entorno de desarrollo
+url=http://10.10.10.10:8081
+descripcion=Serv. apps del entorno de desarrollo2
+
+[apache]
+descripcion=Este es el apache de produccion
+url=http://127.0.0.1:80
+
+[apachedos]
+descripcion=Otro servicio
+url=http://127.0.0.2:80
