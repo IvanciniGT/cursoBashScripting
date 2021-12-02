@@ -1,5 +1,6 @@
 #!/bin/bash
 . ./aux/super_menu.sh
+. ./servicios.sh
 
 ##
 # Menu principal

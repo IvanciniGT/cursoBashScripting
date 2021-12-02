@@ -4,6 +4,10 @@
 descripcion=Servicio 1
 url=https://127.0.0.1:80
 
+[apache]
+descripcion=Servicio 2
+url=https://127.0.0.1:81
+
 [apache2]
 descripcion=Servicio 3
 url=https://127.0.0.1:82

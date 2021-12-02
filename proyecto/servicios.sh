@@ -92,6 +92,9 @@ function altaServicio(){
     # Guardar el servicio....en el archivo
     guardarServicio "$ID_SERVICIO" "$DESCRIPCION_SERVICIO" "$URL_SERVICIO"
     cargarServicios
+    
+    verde "Servicio creado correctamente"
+    pausa
 }
 function guardarServicio(){
     local id=$1
@@ -105,7 +108,35 @@ function guardarServicio(){
     
 }
 function bajaServicio(){
-    echo
+    clear
+    titulo "Listado de servicios"
+    super_read \
+            --prompt "Id del servicio" \
+            --error-message "Solo caracteres en minúscula" \
+            --retries 3 \
+            --validation-pattern "^[a-z]+$" \
+            --question-mark ":" \
+            ID_SERVICIO
+    if [[ $? != "0" ]]; then
+        error "Abortando..."
+        pausa
+        return 1
+    fi
+    echo > ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
+    for id_servicio in ${listado_servicios[@]}
+    do
+        if [[ "$id_servicio" != "$ID_SERVICIO" ]]; then
+            local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
+            local _descripcion=$NOMBRE_ARRAY_SERVICIOS$id_servicio[descripcion]
+            guardarServicio "$id_servicio" "${!_descripcion}" "${!_url}"
+        fi
+    done
+    # Quitarla del fichero
+        # Reescribir el fichero pero sin el que me interesa eliminar
+    # Quitarla del array o recargar servicios
+    cargarServicios
+    verde "Servicio eliminado correctamente"
+    pausa
 }
 function listarServicios(){
     clear
@@ -132,5 +163,3 @@ else
     # Leerlo
     cargarServicios
 fi
-#ltaServicio
-listarServicios
