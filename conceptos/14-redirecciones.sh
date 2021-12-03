@@ -24,6 +24,8 @@ function mifuncion(){
     echo Salida estandar
 }
 
+echo hola > /dev/null     # Redirige la stdout a la basura
+
 mifuncion 1>> ./fichero.txt  2>> ./fichero.txt
 mifuncion 1> ./fichero.txt  2>&1
 
