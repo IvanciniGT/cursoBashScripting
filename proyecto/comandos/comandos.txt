@@ -1,0 +1,9 @@
+[service]
+create=altaServicio
+delete=bajaServicio
+list=listarServicios
+
+[monitoring]
+start=iniciarMonitorizacion
+stop=pararMonitorizacion
+status=estadoServicios

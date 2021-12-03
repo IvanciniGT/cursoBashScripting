@@ -2,6 +2,7 @@
 . ./aux/super_menu.sh
 . ./servicios.sh
 . ./monitorizar.sh
+. ./comandos.sh
 
 ##
 # Menu principal
@@ -27,5 +28,8 @@ function salir(){
 function volver(){
     echo
 }
+
+# No sabemos a priori si necesitamos lanzar el menu?
+# Si no me pasan argumentos, lo anzo... pero si me pasan argumentos.... ummmm... ya no
 
 super_menu "menus/principal"
