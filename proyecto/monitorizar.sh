@@ -5,11 +5,18 @@ declare -a monitorizacion_pids
 #Iniciar Monitorización
 function iniciarMonitorizacion(){ 
     monitorizacion_pids=()
-    [[ $MODO_MONITORIZACION == "interactivo" ]] && clear
-    [[ $MODO_MONITORIZACION == "interactivo" ]] && titulo "Iniciando monitorización de los servicios"
+    if [[ $MODO_MONITORIZACION == "interactivo" ]]; then
+        clear
+        titulo "Iniciando monitorización de los servicios"
+    else
+        # Si estoy en modo script.... que voy a mirar? 
+        # Si tengo un fichero de pids... en ese caso, nada... es que ya los arranque antes
+        if [[ -f "/tmp/monitorizacion.pids" ]]; then
+            echo "La monitorización está en marcha. No hago nada"
+            exit 0
+        fi
+    fi
     
-    # Si estoy en modo script.... que voy a mirar? 
-    # Si tengo un fichero de pids... en ese caso, nada... es que ya los arranque antes
     for id_servicio in ${listado_servicios[@]}
     do
         local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
@@ -17,18 +24,35 @@ function iniciarMonitorizacion(){
         echo "  Monitorizando servicio: ${id_servicio}: ${!_url}"
         iniciarComprobaciones ${!_url} 1 | volcarAFichero /tmp/$id_servicio.log  | identificarAlertas 5 /tmp/$id_servicio.status > /dev/null &
         monitorizacion_pids+=( $! ) 
-        # Quiero persistencia de estos datos.... Si estoy en modo script
     done
+    # Quiero persistencia de estos datos.... Si estoy en modo script
+    if [[ $MODO_MONITORIZACION == "script" ]]; then
+        echo ${monitorizacion_pids[@]} > /tmp/monitorizacion.pids
+    fi
+
     [[ $MODO_MONITORIZACION == "interactivo" ]] && azul $(linea)
     [[ $MODO_MONITORIZACION == "interactivo" ]] && pausa
 }
 #Parar Monitorización
 function pararMonitorizacion(){ 
-    [[ $MODO_MONITORIZACION == "interactivo" ]] && clear
-    [[ $MODO_MONITORIZACION == "interactivo" ]] && titulo "Deteniendo monitorización de los servicios"
+    # Quiero persistencia de estos datos.... Si estoy en modo script
+    if [[ $MODO_MONITORIZACION == "interactivo" ]]; then
+        clear
+        titulo "Deteniendo monitorización de los servicios"
+    else
+        # Leo los pids de un fichero (si estoy en modo script)
+        # Una vez leidos que hago? con el fichero? borralo
+        if [[ ! -f "/tmp/monitorizacion.pids" ]]; then
+            echo "La monitorización NO está en marcha. No puedo parar"
+            exit 10
+        fi
+        read pids < /tmp/monitorizacion.pids
+        #echo $pids
+        monitorizacion_pids=( $pids )
+        #echo ${monitorizacion_pids[@]}
+        rm -f /tmp/monitorizacion.pids
+    fi
     
-    # Leo los pids de un fichero (si estoy en modo script)
-    # Una vez leidos que hago? con el fichero? borralo
 
     for monitorizacion_pid in ${monitorizacion_pids[@]}
     do
