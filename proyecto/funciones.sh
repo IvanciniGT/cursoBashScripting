@@ -51,8 +51,11 @@ function pantallaServicios(){
         clear
         titulo "Estado de los servicios"
         echo
-        echo "http://localhost:8080    $(cat url1.status)"
-        echo "http://localhost:8081    $(cat url2.status)"
+        for id_servicio in ${listado_servicios[@]}
+        do
+            local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
+            echo "  ${!_url}    $(cat /tmp/${id_servicio}.status)"
+        done
         echo
         azul $(linea)
         amarillo "  Pulse cualquier tecla para abandonar esta pantalla"

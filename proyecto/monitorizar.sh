@@ -24,7 +24,7 @@ function pararMonitorizacion(){
     titulo "Deteniendo monitorización de los servicios"
     for monitorizacion_pid in ${monitorizacion_pids[@]}
     do
-        kill -15 $monitorizacion_pid
+        kill -9 $monitorizacion_pid > /dev/null
     done
     azul $(linea)
     pausa
