@@ -1,6 +1,7 @@
 #!/bin/bash
 . ./aux/super_menu.sh
 . ./servicios.sh
+. ./monitorizar.sh
 
 ##
 # Menu principal
@@ -26,15 +27,5 @@ function salir(){
 function volver(){
     echo
 }
-function iniciarMonitorizacion(){
-    echo
-}
-function pararMonitorizacion(){
-    echo
-}
-function estadoServicios(){
-    echo
-}
-
 
 super_menu "menus/principal"

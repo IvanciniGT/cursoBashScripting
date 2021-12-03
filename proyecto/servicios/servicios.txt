@@ -7,3 +7,7 @@ url=https://127.0.0.1:80
 [apache2]
 descripcion=Servicio 3
 url=https://127.0.0.1:82
+
+[docker]
+descripcion=Nginx
+url=http://127.0.0.1:8080

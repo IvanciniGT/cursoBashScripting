@@ -30,6 +30,7 @@ function identificarAlertas(){
     local FICHERO=$2
     local fallos_consecutivos_actual=0
     local mensaje=""
+    echo $(gris "Desconocido") > $FICHERO
     while read linea 
     do
         if [[ "${linea}" =~ ^2 ]]; then
@@ -44,7 +45,7 @@ function identificarAlertas(){
     done
 }
 
-function estadoServicios(){
+function pantallaServicios(){
     while true
     do
         clear
@@ -62,20 +63,20 @@ function estadoServicios(){
 #trap funcion_propia SIGTERM
 # docker run --name minginx --rm -p 8080:80 -d nginx
 # docker stop minginx
-read -n 1 -p "Pulse una tecla tecla comenzar y en cualquier momento otra para finalizar"
-iniciarComprobaciones "http://localhost:8080/" 1 | volcarAFichero localhost.log  | identificarAlertas 5 url1.status > /dev/null &
-comprobador_pid_1=$!
-iniciarComprobaciones "http://localhost:8081/" 1 | volcarAFichero localhost2.log | identificarAlertas 5 url2.status > /dev/null &
-comprobador_pid_2=$!
+#read -n 1 -p "Pulse una tecla tecla comenzar y en cualquier momento otra para finalizar"
+#iniciarComprobaciones "http://localhost:8080/" 1 | volcarAFichero /tmp/localhost.log  | identificarAlertas 5 /tmp/url1.status > /dev/null &
+#comprobador_pid_1=$!
+#iniciarComprobaciones "http://localhost:8081/" 1 | volcarAFichero /tmp/localhost2.log | identificarAlertas 5 /tmp/url2.status > /dev/null &
+#comprobador_pid_2=$!
+#
+#estadoServicios &
+#comprobador_pid_3=$!
+#
+#read -n 1
 
-estadoServicios &
-comprobador_pid_3=$!
-
-read -n 1
-
-kill -15 $comprobador_pid_1
-kill -15 $comprobador_pid_2
-kill -15 $comprobador_pid_3
+#kill -15 $comprobador_pid_1
+#kill -15 $comprobador_pid_2
+#kill -15 $comprobador_pid_3
 #----------------------------------
 #TASA REFRESCO SEA DE 4 segundos 
 #URL1: OK| WARNING | ALERTA
