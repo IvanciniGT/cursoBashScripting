@@ -139,16 +139,16 @@ function bajaServicio(){
     pausa
 }
 function listarServicios(){
-    clear
-    titulo "Listado de servicios"
+    [[ MODO_MONITORIZACION == "interactivo" ]] && clear                                               # Solo si estoy en modo interactivo
+    [[ MODO_MONITORIZACION == "interactivo" ]] && titulo "Listado de servicios"                       #
     for id_servicio in ${listado_servicios[@]}
     do
         local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
         local _descripcion=$NOMBRE_ARRAY_SERVICIOS$id_servicio[descripcion]
         echo "${id_servicio}   ${!_url}  ${!_descripcion}"
     done
-    azul $(linea)
-    pausa
+    [[ MODO_MONITORIZACION == "interactivo" ]] && azul $(linea)                                       #
+    [[ MODO_MONITORIZACION == "interactivo" ]] && pausa                                               #
 }
 
 # Programa

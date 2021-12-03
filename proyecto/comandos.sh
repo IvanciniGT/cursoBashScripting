@@ -24,7 +24,7 @@ function cargarComandos(){
             id=${linea//\[/}
             id=${id//\]/}
             listado_comandos+=( "$id" )
-            eval "declare -g -A ${NOMBRE_ARRAY_SERVICIOS}$id"
+            eval "declare -g -A ${NOMBRE_ARRAY_COMANDOS}$id"
                 # declare -g -A SUBCOMANDOS_service
         elif [[ "$linea" == *=* ]]; then
             subcomando=${linea%=*}

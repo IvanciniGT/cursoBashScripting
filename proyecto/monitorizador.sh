@@ -4,6 +4,7 @@
 . ./monitorizar.sh
 . ./comandos.sh
 
+MODO_MONITORIZACION="script"
 ##
 # Menu principal
 #  1. Administrar Servicios
@@ -32,4 +33,18 @@ function volver(){
 # No sabemos a priori si necesitamos lanzar el menu?
 # Si no me pasan argumentos, lo anzo... pero si me pasan argumentos.... ummmm... ya no
 
-super_menu "menus/principal"
+if[[ -n "$1" ]]; then # Aqui debería venir algo como "service" o "monitoring"
+    # comprobar si es un valor válido -> listado_comandos
+    # Si no está ahí dentro: EXPLOSION !!!!!!
+    # Si si que está?
+        # Comprobar que me han pasado un $2
+            # Que no: EXPLOSION !!!!
+            # Que si
+                # Buscar el subcomando: $2 -> SUBCOMANDOS_$1["$2"] -> funcion que debo ejecutar
+                    # Con qué argumentos? $3 $4 $5 
+        
+else
+    MODO_MONITORIZACION="interactivo"
+    super_menu "menus/principal"
+fi
+
