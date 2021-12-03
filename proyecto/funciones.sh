@@ -1,4 +1,5 @@
 #!/bin/bash
+. ./aux/formatos.sh
 
 function comprobarURL(){
     response_code=$(curl -o /dev/null -s -L -w '%{http_code}' "$1")
@@ -33,13 +34,28 @@ function identificarAlertas(){
     do
         if [[ "${linea}" =~ ^2 ]]; then
             let fallos_consecutivos_actual=0
-            mensaje=OK
+            mensaje=$(verde OK)
         else
             let fallos_consecutivos_actual=$fallos_consecutivos_actual+1
-            (( "$fallos_consecutivos_actual" >= "$MAXIMO_FALLOS_CONSECUTIVOS" )) && mensaje=ALERT || mensaje=WARNING
+            (( "$fallos_consecutivos_actual" >= "$MAXIMO_FALLOS_CONSECUTIVOS" )) && mensaje=$(rojo ALERT) || mensaje=$(amarillo WARNING)
         fi
         echo $mensaje > $FICHERO
         echo $linea
+    done
+}
+
+function estadoServicios(){
+    while true
+    do
+        clear
+        titulo "Estado de los servicios"
+        echo
+        echo "http://localhost:8080    $(cat url1.status)"
+        echo "http://localhost:8081    $(cat url2.status)"
+        echo
+        azul $(linea)
+        amarillo "  Pulse cualquier tecla para abandonar esta pantalla"
+        sleep 4
     done
 }
 
@@ -52,19 +68,14 @@ comprobador_pid_1=$!
 iniciarComprobaciones "http://localhost:8081/" 1 | volcarAFichero localhost2.log | identificarAlertas 5 url2.status > /dev/null &
 comprobador_pid_2=$!
 
-
-while true
-do
-    clear
-    echo "http://localhost:8080    $(cat url1.status)"
-    echo "http://localhost:8081    $(cat url2.status)"
-    sleep 4
-done
+estadoServicios &
+comprobador_pid_3=$!
 
 read -n 1
 
 kill -15 $comprobador_pid_1
 kill -15 $comprobador_pid_2
+kill -15 $comprobador_pid_3
 #----------------------------------
 #TASA REFRESCO SEA DE 4 segundos 
 #URL1: OK| WARNING | ALERTA
