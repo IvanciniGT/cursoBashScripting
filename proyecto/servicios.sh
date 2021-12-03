@@ -108,19 +108,25 @@ function guardarServicio(){
     
 }
 function bajaServicio(){
-    clear
-    titulo "Listado de servicios"
-    super_read \
-            --prompt "Id del servicio" \
-            --error-message "Solo caracteres en minúscula" \
-            --retries 3 \
-            --validation-pattern "^[a-z]+$" \
-            --question-mark ":" \
-            ID_SERVICIO
-    if [[ $? != "0" ]]; then
-        error "Abortando..."
-        pausa
-        return 1
+    if [[ $MODO_MONITORIZACION == "interactivo" ]]
+    then
+        clear
+        titulo "Baja de servicio"
+        super_read \
+                --prompt "Id del servicio" \
+                --error-message "Solo caracteres en minúscula" \
+                --retries 3 \
+                --validation-pattern "^[a-z]+$" \
+                --question-mark ":" \
+                ID_SERVICIO
+        if [[ $? != "0" ]]; then
+            error "Abortando..."
+            pausa
+            return 1
+        fi
+    else
+        ID_SERVICIO=$1
+        [[ -z "$ID_SERVICIO" ]] && echo "Error: Falta el ID del servicio" && exit 1
     fi
     echo > ${DIRECTORIO_SERVICIOS}${ARCHIVO_SERVICIOS}
     for id_servicio in ${listado_servicios[@]}
@@ -135,20 +141,18 @@ function bajaServicio(){
         # Reescribir el fichero pero sin el que me interesa eliminar
     # Quitarla del array o recargar servicios
     cargarServicios
-    verde "Servicio eliminado correctamente"
-    pausa
+    [[ $MODO_MONITORIZACION == "interactivo" ]] && verde "Servicio eliminado correctamente"
+    [[ $MODO_MONITORIZACION == "interactivo" ]] && pausa
 }
 function listarServicios(){
-    [[ MODO_MONITORIZACION == "interactivo" ]] && clear                                               # Solo si estoy en modo interactivo
-    [[ MODO_MONITORIZACION == "interactivo" ]] && titulo "Listado de servicios"                       #
+    [[ $MODO_MONITORIZACION == "interactivo" ]] && clear && titulo "Listado de servicios"                       #
     for id_servicio in ${listado_servicios[@]}
     do
         local _url=$NOMBRE_ARRAY_SERVICIOS$id_servicio[url]
         local _descripcion=$NOMBRE_ARRAY_SERVICIOS$id_servicio[descripcion]
         echo "${id_servicio}   ${!_url}  ${!_descripcion}"
     done
-    [[ MODO_MONITORIZACION == "interactivo" ]] && azul $(linea)                                       #
-    [[ MODO_MONITORIZACION == "interactivo" ]] && pausa                                               #
+    [[ $MODO_MONITORIZACION == "interactivo" ]] && azul $(linea) && pausa                                               #
 }
 
 # Programa
